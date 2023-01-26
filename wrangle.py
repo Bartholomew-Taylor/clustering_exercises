@@ -67,3 +67,29 @@ def clean_prep_zillow(df):
     train, validate, test = train_val_test(df)
     
     return train, validate, test
+
+def na_stats(df):
+    odf = pd.DataFrame({'features': list(df.columns)})
+    num_na = []
+    percent_na = []
+    for col in df.columns:
+        num_na.append(df[col].isna().sum())
+        percent_na.append((df[col].isna().sum()/len(df[col])))
+    odf['num_na'] = num_na         
+    odf['percent_na'] = percent_na
+        
+    return odf
+
+def gap_killer(df):
+    to_drop = []
+    col_count = na_stats(df)
+    for index, row in col_count.iterrows():
+        if row['percent_na'] >= .60:
+            to_drop.append(index)
+        out_df = df.drop(df.columns[to_drop], axis = 1)
+    null_row = out_df.isnull().sum(axis=1)
+    out_df['nulls'] = null_row
+    out_df = out_df[out_df['nulls'] < 9]
+    out_df.drop(columns = ['nulls', 'isdupe'], inplace = True)
+    return out_df
+        
