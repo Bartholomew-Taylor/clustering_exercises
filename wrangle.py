@@ -46,7 +46,7 @@ def train_val_test(df):
     validating, and testing
     models
     '''
-    seed = 99
+    seed = 42
     train, val_test = train_test_split(df, train_size = 0.7,
                                        random_state = seed)
     
